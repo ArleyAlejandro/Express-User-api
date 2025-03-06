@@ -5,7 +5,7 @@ const {Schema, model} = mongoose;
 
 const userSchema = new Schema({ 
     name: {type: String,
-            required: [true, 'Name is required']
+            // required: [true, 'Name is required']
     }, 
     surName: String, 
     email: String, 
@@ -14,5 +14,3 @@ const userSchema = new Schema({
 
 const userModel = model('User', userSchema);
 export default userModel;
-
-
