@@ -1,45 +1,47 @@
-// import express from 'express'
-// import userModel from '../models/user.js'; 
-// import '../db/connection.js'
+import express from "express";
+import userModel from "../db/models/user.schema.js";  
+import "../db/connection.js"; 
+import bcrypt from "bcrypt";
 
-// userMagnament.registerUser = async (req, res) =>{
-// }
 
-// export const loginUser = async (req, res) => {
 
-// }
+export const loginUser = async (req, res) => {
+    try {
+        const data = req.body;
+        console.log(data)
+
+        $email = data.email;
+
+        
+
+
+        res.status(201).json({ message: "Usuario loguead con éxito" });
+    } catch (error) {
+        res.status(400).json({ error: "Error al login el usuario", details: error });
+    }
+}
 
 export async function registerUser(req, res) {
-    // res.json('Test 4')
-
     try {
+        const data = req.body;
+        const user = new userModel({
+            name: data.name,
+            surName: data.surName,
+            email: data.email,
+            pass: data.pass  
+        });
 
-        const datos = req.body;
-        console.log(datos);
+        // Encripto la contraseña
+        user.pass = await bcrypt.hash(user.pass, 10);
 
-        // Agafar les dades del body enviades des del client
-        
-        
-        // const newUser 
-        
-        
-        // S'assigna una instància del model
-        // validar les dades de l'usuari utilitzant el mètode `validateSync()`,
-        // que comprova si les dades de l'usuari compleixen amb els esquemes de validació definits en el model.
-        // Si no es compleix, generar una excepció
-        // if (
-            // Consulta a la base de dades per si l'email existeix)) {
-        // Si existeix genera una excepció
-        // throw "{register: 'User already exists'}";
-        // }else{
-        // Xifrar el password mijançant bcrypjs (operació asíncrona)
-        // Es desa a la base de dades (operació asíncrona)
-        // S'envia un missatge de confirmació
-        // }
-        } catch (error) {
-        // Es retorna l'objecte amb els errors
-        req.status(400).json(error);
-        };
+        // Inserto el usuario en la base de datos 
+        await user.save();
+
+        res.status(201).json({ message: "Usuario registrado con éxito", user });
+
+    } catch (error) {
+        res.status(400).json({ error: "Error al registrar el usuario", details: error });
+    }
 }
 
 

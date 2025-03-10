@@ -1,6 +1,6 @@
 import express from "express";
 import "./db/connection.js";
-import { registerUser } from "./controllers/user.controller.js";
+import { registerUser, loginUser } from "./controllers/user.controller.js";
 
 const app = express();
 app.use(express.json());
@@ -8,7 +8,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json("Test 2");
 });
-// app.post("/users/login", loginUser)
+
+app.post("/users/login", loginUser)
 app.post("/users/register", registerUser);
 
 app.listen(8080, () => {
