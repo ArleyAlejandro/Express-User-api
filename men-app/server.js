@@ -1,9 +1,11 @@
 import express from "express";
 import "./db/connection.js";
 import { registerUser, loginUser } from "./controllers/user.controller.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.json("Test 2");

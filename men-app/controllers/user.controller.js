@@ -2,11 +2,15 @@ import express from "express";
 import userModel from "../db/models/user.schema.js";
 import "../db/connection.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const loginUser = async (req, res) => {
   try {
     const data = req.body;
     const email = data.email;
+    const PRIVATE_KEY = "secret";
+    // const {PRIVATE_KEY} = process.env;
+    // console.log("PRIVATE_KEY:", PRIVATE_KEY);
 
     // Hago una consulta a la base de datos para recibir los datos del usuario
     const user = await userModel.findOne({ email });
@@ -24,8 +28,22 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ error: "Contraseña incorrecta" });
     }
 
-    // Si todo va bien , el usuario se ha logueado correctamente
-    res.status(201).json({ message: "Usuario loguead con éxito" });
+    // Token que se enviará en la coockie
+    const token = jwt.sign({ name: user.name }, PRIVATE_KEY, {
+      expiresIn: "24h",
+    });
+
+    // coockie para enviar al cliente 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Respuesta al cliente de 200 ok
+    return res.status(200).json({ message: "Usuario logueado correctamente" });
+    
   } catch (error) {
     res
       .status(400)
@@ -50,15 +68,15 @@ export async function registerUser(req, res) {
     let validEmail = regexp_email.test(data.email) ? true : false;
     if (!validEmail) {
       return res.status(401).json({ error: "Invalid email" });
-    } 
+    }
 
-    // Compruebo que el usuario no exista en la base de datos 
+    // Compruebo que el usuario no exista en la base de datos
     const email = user.email;
-    const userExists = await userModel.findOne({email});
+    const userExists = await userModel.findOne({ email });
 
     // Si el usuario existe devuelvo un mensaje de error
     if (userExists) {
-      return res.status(401).json({error: "The user exists, try to log in"})
+      return res.status(401).json({ error: "The user exists, try to log in" });
     }
 
     // Reviso que la contraseña es valida con una expresión regular
@@ -68,7 +86,7 @@ export async function registerUser(req, res) {
     let validPassword = regexp_password.test(data.pass) ? true : false;
     if (!validPassword) {
       return res.status(401).json({ error: "Invalid password" });
-    } 
+    }
 
     // Encripto la contraseña
     user.pass = await bcrypt.hash(user.pass, 10);
