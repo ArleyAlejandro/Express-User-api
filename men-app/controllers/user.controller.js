@@ -4,15 +4,23 @@ import "../db/connection.js";
 import bcrypt from "bcrypt";
 
 
-
 export const loginUser = async (req, res) => {
     try {
         const data = req.body;
         console.log(data)
 
-        $email = data.email;
+        const email = data.email;
+        const user = await userModel.findOne({ email });
 
-        
+        if (!user) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+
+        const isMatch = await bcrypt.compare(data.pass, user.pass);
+
+        if (!isMatch) {
+            return res.status(401).json({ error: "Contraseña incorrecta" });
+        }
 
 
         res.status(201).json({ message: "Usuario loguead con éxito" });
@@ -31,10 +39,7 @@ export async function registerUser(req, res) {
             pass: data.pass  
         });
 
-        // Encripto la contraseña
         user.pass = await bcrypt.hash(user.pass, 10);
-
-        // Inserto el usuario en la base de datos 
         await user.save();
 
         res.status(201).json({ message: "Usuario registrado con éxito", user });

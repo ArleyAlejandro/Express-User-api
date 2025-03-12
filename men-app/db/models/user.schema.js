@@ -6,9 +6,15 @@ const userSchema = new Schema({
     name: {type: String,
             required: [true, 'Name is required']
     }, 
-    surName: String, 
-    email: String, 
-    pass: String
+    surName: {type: String,
+            required: [true, 'surName is required']
+    }, 
+    email: {type: String,
+            required: [true, 'email is required']
+    }, 
+    pass: {type: String,
+            required: [true, 'pass is required']
+    }, 
 });
 
 const userModel = model('User', userSchema);
