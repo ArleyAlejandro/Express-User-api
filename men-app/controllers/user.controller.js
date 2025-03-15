@@ -1,4 +1,3 @@
-import express from "express";
 import userModel from "../db/models/user.schema.js";
 import "../db/connection.js";
 import bcrypt from "bcrypt";

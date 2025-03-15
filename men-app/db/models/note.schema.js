@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
 
-const noteModel = new Schema(
+const noteSchema = new Schema(
     {
         title:{type: String, required: [true, "Title is required"]},
         text:{type: String, required: [true, "Text is required"]},
@@ -13,3 +13,7 @@ const noteModel = new Schema(
       timestamps: true,
     }
 );
+
+
+const noteModel = model("Note", noteSchema);
+export default noteModel;
