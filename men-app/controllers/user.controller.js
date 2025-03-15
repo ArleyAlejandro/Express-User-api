@@ -8,9 +8,8 @@ export const loginUser = async (req, res) => {
   try {
     const data = req.body;
     const email = data.email;
-    const PRIVATE_KEY = "secret";
-    // const {PRIVATE_KEY} = process.env;
-    // console.log("PRIVATE_KEY:", PRIVATE_KEY);
+    const {PRIVATE_KEY} = process.env;
+    console.log("PRIVATE_KEY:", PRIVATE_KEY);
 
     // Hago una consulta a la base de datos para recibir los datos del usuario
     const user = await userModel.findOne({ email });
@@ -29,7 +28,7 @@ export const loginUser = async (req, res) => {
     }
 
     // Token que se enviará en la coockie
-    const token = jwt.sign({ name: user.name }, PRIVATE_KEY, {
+    const token = jwt.sign( { id: user._id, name: user.name, email: user.email }, PRIVATE_KEY, {
       expiresIn: "24h",
     });
 

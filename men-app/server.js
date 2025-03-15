@@ -1,18 +1,17 @@
 import express from "express";
 import "./db/connection.js";
-import { registerUser, loginUser } from "./controllers/user.controller.js";
 import cookieParser from "cookie-parser";
+import userRoutes from "./routes/user_routes.js"
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  res.json("Test 2");
+  res.json("API funcionando!.");
 });
 
-app.post("/users/login", loginUser)
-app.post("/users/register", registerUser);
+app.use("/users", userRoutes);
 
 app.listen(8080, () => {
   console.log("Server is running on port 8080.");
