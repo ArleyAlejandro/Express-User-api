@@ -3,12 +3,11 @@ import "../db/connection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export const loginUser = async (req, res) => {
+export async function loginUser(req, res) {
   try {
     const data = req.body;
     const email = data.email;
     const {PRIVATE_KEY} = process.env;
-    console.log("PRIVATE_KEY:", PRIVATE_KEY);
 
     // Hago una consulta a la base de datos para recibir los datos del usuario
     const user = await userModel.findOne({ email });
@@ -51,6 +50,7 @@ export const loginUser = async (req, res) => {
 
 export async function registerUser(req, res) {
   try {
+    console.log(req)
     const data = req.body;
     const user = new userModel({
       name: data.name,
@@ -58,15 +58,6 @@ export async function registerUser(req, res) {
       email: data.email,
       pass: data.pass,
     });
-
-    // Reviso que el email es valida con una expresión regular
-    let regexp_email =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-    let validEmail = regexp_email.test(data.email) ? true : false;
-    if (!validEmail) {
-      return res.status(401).json({ error: "Invalid email" });
-    }
 
     // Compruebo que el usuario no exista en la base de datos
     const email = user.email;
@@ -77,17 +68,6 @@ export async function registerUser(req, res) {
       return res.status(401).json({ error: "The user exists, try to log in" });
     }
 
-    // Reviso que la contraseña es valida con una expresión regular
-    let regexp_password =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&#.$($)$-$_])[A-Za-z\d$@$!%*?&#.$($)$-$_]{8,15}$/;
-
-    let validPassword = regexp_password.test(data.pass) ? true : false;
-    if (!validPassword) {
-      return res.status(401).json({ error: "Invalid password" });
-    }
-
-    // Encripto la contraseña
-    user.pass = await bcrypt.hash(user.pass, 10);
     await user.save();
 
     res.status(201).json({ message: "Usuario registrado con éxito", user });
@@ -97,11 +77,3 @@ export async function registerUser(req, res) {
       .json({ error: "Error al registrar el usuario", details: error });
   }
 }
-
-// export async function updateUser (req, res){
-
-// }
-
-// export async function deleteUser (req, res){
-
-// }
