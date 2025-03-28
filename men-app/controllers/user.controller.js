@@ -33,10 +33,12 @@ export async function loginUser(req, res) {
     // coockie para enviar al cliente 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      secure: false,
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    console.log("Token generado:", token);
 
     // Respuesta al cliente de 200 ok
     return res.status(200).json({ message: "Usuario logueado correctamente" });
